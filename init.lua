@@ -89,6 +89,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+vim.keymap.set('n', '<leader>wv', ':vsplit<CR><C-w>l', { noremap = true })
+vim.keymap.set('n', '<leader>ww', ':wincmd w<CR>', { noremap = true })
+vim.keymap.set('n', '<leader><tab>n', ':tabnew<CR>', { noremap = true })
+
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -153,6 +157,7 @@ require('lazy').setup({
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
+  'sebdah/vim-delve',
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
@@ -171,7 +176,25 @@ require('lazy').setup({
       },
     },
   },
+  -- Neogit
+  {
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
 
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      'ibhagwan/fzf-lua', -- optional
+      'echasnovski/mini.pick', -- optional
+    },
+    opts = {
+      integrations = {
+        telescope = true,
+      },
+    },
+    config = true,
+  },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -294,7 +317,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+      vim.keymap.set('n', '<leader>s,', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
@@ -467,11 +490,48 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local vue_lsp_path = '~/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server'
       local servers = {
         clangd = {},
-        gopls = {},
+        gopls = {
+          settings = {
+            indentSize = 2,
+          },
+        },
+        templ = {},
+        sqlls = {},
+        volar = {
+          filetypes = { 'vue' },
+        },
         -- pyright = {},
         rust_analyzer = {},
+        tailwindcss = {
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  { 'cva\\(([^)]*)\\)', '["\'`]([^"\'`]*).*?["\'`]' },
+                  { 'cx\\(([^)]*)\\)', "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                },
+              },
+            },
+          },
+        },
+        cssls = {
+          css = {
+            validate = true,
+          },
+          less = {
+            validate = true,
+          },
+          scss = {
+            validate = true,
+          },
+        },
+        graphql = {
+          filetypes = { 'graphql', 'graphqls' },
+          root_dir = require('lspconfig').util.root_pattern('.git', '.graphqlrc*', '.graphql.config.*', 'graphql.config.*'),
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -480,6 +540,13 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         tsserver = {
           init_options = {
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                location = vue_lsp_path,
+                languages = { 'vue' },
+              },
+            },
             preferences = {
               quotePreference = 'double',
             },
@@ -825,6 +892,12 @@ require('lazy').setup({
   },
   {
     'mg979/vim-visual-multi',
+  },
+  {
+    'nvim-pack/nvim-spectre',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+    },
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
