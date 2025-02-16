@@ -176,28 +176,6 @@ require('lazy').setup({
       },
     },
   },
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {
-      settings = {
-        tsserver_format_options = function()
-          return {
-            baseIndentSize = 0,
-            indentSize = 2,
-            insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-            insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-            insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-            insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-            insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-            insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-            tabSize = 2,
-          }
-        end,
-      },
-    },
-  },
-
   -- Neogit
   {
     'NeogitOrg/neogit',
@@ -270,7 +248,7 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
+  --
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -345,7 +323,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>sg', function()
+        builtin.live_grep {}
+      end, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s,', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -563,69 +543,61 @@ require('lazy').setup({
           filetypes = { 'graphql', 'graphqls' },
           root_dir = require('lspconfig').util.root_pattern('.git', '.graphqlrc*', '.graphql.config.*', 'graphql.config.*'),
         },
-        ts_ls = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {
-        --   init_options = {
-        --     plugins = {
-        --       {
-        --         name = '@vue/typescript-plugin',
-        --         location = vue_lsp_path,
-        --         languages = { 'vue' },
-        --       },
-        --     },
-        --     preferences = {
-        --       quotePreference = 'double',
-        --     },
-        --   },
-        --   settings = {
-        --     javascript = {
-        --       format = {
-        --         baseIndentSize = 0,
-        --         indentSize = 2,
-        --         insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-        --         tabSize = 2,
-        --       },
-        --     },
-        --     typescript = {
-        --       format = {
-        --         baseIndentSize = 0,
-        --         indentSize = 2,
-        --         insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-        --         tabSize = 2,
-        --       },
-        --     },
-        --     typescriptreact = {
-        --       format = {
-        --         baseIndentSize = 0,
-        --         indentSize = 2,
-        --         insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-        --         insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-        --         tabSize = 2,
-        --       },
-        --     },
-        --   },
-        -- },
-        --
+        ts_ls = {
+          init_options = {
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                location = '/usr/local/lib/node_modules/@vue/typescript-plugin',
+                languages = { 'vue' },
+              },
+            },
+            preferences = {
+              quotePreference = 'double',
+            },
+          },
+          settings = {
+            javascript = {
+              format = {
+                baseIndentSize = 0,
+                indentSize = 2,
+                insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
+                insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
+                tabSize = 2,
+              },
+            },
+            typescript = {
+              format = {
+                baseIndentSize = 0,
+                indentSize = 2,
+                insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
+                insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
+                tabSize = 2,
+              },
+            },
+            typescriptreact = {
+              format = {
+                baseIndentSize = 0,
+                indentSize = 2,
+                insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
+                insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
+                insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
+                tabSize = 2,
+              },
+            },
+          },
+        },
 
         lua_ls = {
           -- cmd = {...},
