@@ -846,6 +846,18 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+      local minifiles = require 'mini.files'
+      minifiles.setup {
+        options = {
+          use_as_default_explorer = false,
+        },
+      }
+      vim.keymap.set('n', '<leader>fm', function()
+        minifiles.open(vim.api.nvim_buf_get_name(0), true)
+      end, { desc = 'Open mini.files (directory of current file)' })
+      vim.keymap.set('n', '<leader>fM', function()
+        minifiles.open(vim.uv.cwd(), true)
+      end, { desc = 'Open mini.files (cwd)' })
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
